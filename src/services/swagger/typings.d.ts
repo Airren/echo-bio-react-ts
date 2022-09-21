@@ -49,4 +49,9 @@ declare namespace API {
     type?: string;
     message?: string;
   };
+  type Token = {
+    access_token: string;
+    token_type?: string;
+    expire?: string;
+  };
 }

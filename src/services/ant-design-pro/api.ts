@@ -6,7 +6,7 @@ import { request } from 'umi';
 export async function currentUser(options?: { [key: string]: any }) {
   return request<{
     data: API.CurrentUser;
-  }>('/api/currentUser', {
+  }>('/api/user/info', {
     method: 'GET',
     ...(options || {}),
   });
@@ -37,6 +37,17 @@ export async function getNotices(options?: { [key: string]: any }) {
   return request<API.NoticeIconList>('/api/notices', {
     method: 'GET',
     ...(options || {}),
+  });
+}
+
+// Get Token
+export async function getToken(options?: { [key: string]: any }) {
+  console.log('come to get token:', options);
+  return request('/api/user/login', {
+    method: 'GET',
+    params: {
+      ...options,
+    },
   });
 }
 

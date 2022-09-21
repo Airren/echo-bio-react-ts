@@ -7,9 +7,14 @@ import type { RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import type { RequestConfig } from '@@/plugin-request/request';
+import { JwtToken } from '@/model/data';
 
+const homePath = '/';
 const isDev = process.env.NODE_ENV === 'development';
-const loginPath = '/user/login';
+const loginPage =
+  'http://124.223.99.93:8001/login/oauth/authorize?client_id=a0bcc0d85a3e38c46d0d&' +
+  'response_type=code&redirect_uri=http://127.0.0.1:8000/user/login&scope=read&state=echo-bio-react';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -30,12 +35,14 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser();
       return msg.data;
     } catch (error) {
-      history.push(loginPath);
+      window.location.href = loginPage;
+      // history.push(loginPath);
     }
     return undefined;
   };
   // 如果不是登录页面，执行
-  if (history.location.pathname !== loginPath) {
+  console.log('current path is ', history.location.pathname);
+  if (history.location.pathname !== homePath) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -61,8 +68,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
+      if (!initialState?.currentUser && location.pathname !== homePath) {
+        window.location.href = loginPage;
       }
     },
     links: isDev
@@ -81,7 +88,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
-    childrenRender: (children, props) => {
+    childrenRender: (children: any, props: any) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
         <>
@@ -104,4 +111,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     ...initialState?.settings,
   };
+};
+const authHeaderInterceptor = (url: string, options: any) => {
+  const tokenVal = localStorage.getItem(JwtToken);
+  const authHeader = { token: tokenVal };
+  return {
+    url: `${url}`,
+    options: { ...options, interceptors: true, headers: authHeader },
+  };
+};
+export const request: RequestConfig = {
+  // errorHandler,
+  // 新增自动添加AccessToken的请求前拦截器
+  requestInterceptors: [authHeaderInterceptor],
 };
