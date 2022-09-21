@@ -44,7 +44,10 @@
   },
   {
     path: '/',
-    redirect: '/welcome',
+    layout: false,
+    access: 'guest',
+    component: './Home',
+    // redirect: '/home',
   },
   {
     component: './404',
