@@ -25,7 +25,7 @@ export type UpdateFormProps = {
   values: Partial<API.RuleListItem>;
 };
 
-const UpdateForm: React.FC<UpdateFormProps> = (props) => {
+const JobAddForm: React.FC<UpdateFormProps> = (props) => {
   const intl = useIntl();
   return (
     <StepsForm
@@ -206,4 +206,4 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   );
 };
 
-export default UpdateForm;
+export default JobAddForm;

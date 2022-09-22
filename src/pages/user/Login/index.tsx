@@ -3,7 +3,7 @@ import { message } from 'antd';
 import React from 'react';
 import { history, useIntl, useModel } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
-import { JwtToken } from '@/model/data';
+import { JwtToken } from '@/models/data';
 
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
