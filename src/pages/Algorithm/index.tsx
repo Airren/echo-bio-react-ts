@@ -68,7 +68,13 @@ const AlgorithmCardList = () => {
                   }
                 >
                   <Card.Meta
-                    avatar={<img alt="" className={styles.cardAvatar} src={item.image} />}
+                    avatar={
+                      <img
+                        alt=""
+                        className={styles.cardAvatar}
+                        src={typeof item.image === 'string' ? item.image : ''}
+                      />
+                    }
                     title={<a>{item.name}</a>}
                     description={
                       <Paragraph className={styles.item} ellipsis={{ rows: 3 }}>

@@ -1,20 +1,22 @@
-import { addRule, removeRule, rule, updateRule } from '@/services/ant-design-pro/api';
+import { addRule, removeRule, updateRule } from '@/services/ant-design-pro/api';
 import { PlusOutlined } from '@ant-design/icons';
-import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
+import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   FooterToolbar,
   ModalForm,
   PageContainer,
-  ProDescriptions,
   ProFormText,
   ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Drawer, Input, message } from 'antd';
+import { Button, message } from 'antd';
 import React, { useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'umi';
-import type { FormValueType } from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
+import { FormattedMessage } from 'umi';
+import type { AlgorithmItem } from '@/models/algorithm';
+import { queryRule } from '@/services/algorithm';
+import type { FormValueType } from '@/pages/TableList/components/UpdateForm';
+import JobAddForm from '@/pages/TableList/components/UpdateForm';
+import AlgorithmDetail from './components/AlgorithmDetails';
 
 /**
  * @en-US Add node
@@ -83,7 +85,7 @@ const handleRemove = async (selectedRows: API.RuleListItem[]) => {
   }
 };
 
-const TableList: React.FC = () => {
+const AlgorithmList: React.FC = () => {
   /**
    * @en-US Pop-up window of new window
    * @zh-CN 新建窗口的弹窗
@@ -98,25 +100,13 @@ const TableList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<AlgorithmItem>();
+  const [selectedRowsState, setSelectedRows] = useState<AlgorithmItem[]>([]);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
-
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns: ProColumns<AlgorithmItem>[] = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
+      title: '算法名称',
       dataIndex: 'name',
-      tip: 'The rule name is the unique key',
       render: (dom, entity) => {
         return (
           <a
@@ -125,129 +115,48 @@ const TableList: React.FC = () => {
               setShowDetail(true);
             }}
           >
-            {dom}
+            {entity.label}
           </a>
         );
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
+      title: '描述',
+      dataIndex: 'description',
       valueType: 'textarea',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleCallNo"
-          defaultMessage="Number of service calls"
-        />
-      ),
-      dataIndex: 'callNo',
+      title: '更新时间',
       sorter: true,
-      hideInForm: true,
-      renderText: (val: string) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
-    },
-    {
-      title: <FormattedMessage id="pages.searchTable.titleStatus" defaultMessage="Status" />,
-      dataIndex: 'status',
-      hideInForm: true,
-      valueEnum: {
-        0: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
-          ),
-          status: 'Default',
-        },
-        1: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
-          ),
-          status: 'Processing',
-        },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
-      },
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
-      sorter: true,
-      dataIndex: 'updatedAt',
+      dataIndex: 'updated_at',
       valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
+      renderFormItem: (item, { defaultRender }) => {
         return defaultRender(item);
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
-        <a
+        <Button
+          type={'primary'}
           key="config"
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
           }}
         >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
-        </a>,
+          更新算法
+        </Button>,
       ],
     },
   ];
 
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
+      <ProTable<AlgorithmItem, API.PageParams>
+        headerTitle="分析算法"
         actionRef={actionRef}
         rowKey="key"
         search={{
@@ -261,10 +170,11 @@ const TableList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined />
+            {'新建算法'}
           </Button>,
         ]}
-        request={rule}
+        request={queryRule}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
@@ -272,6 +182,7 @@ const TableList: React.FC = () => {
           },
         }}
       />
+
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
           extra={
@@ -285,7 +196,7 @@ const TableList: React.FC = () => {
                   id="pages.searchTable.totalServiceCalls"
                   defaultMessage="Total number of service calls"
                 />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
+                {selectedRowsState.reduce((pre, item) => pre + item.favorite!, 0)}{' '}
                 <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
               </span>
             </div>
@@ -298,24 +209,13 @@ const TableList: React.FC = () => {
               actionRef.current?.reloadAndRest?.();
             }}
           >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
+            批量删除
           </Button>
         </FooterToolbar>
       )}
+
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
+        title="新建算法"
         width="400px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
@@ -346,7 +246,8 @@ const TableList: React.FC = () => {
         />
         <ProFormTextArea width="md" name="desc" />
       </ModalForm>
-      <UpdateForm
+
+      <JobAddForm
         onSubmit={async (value) => {
           const success = await handleUpdate(value);
           if (success) {
@@ -367,31 +268,15 @@ const TableList: React.FC = () => {
         values={currentRow || {}}
       />
 
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
-          />
-        )}
-      </Drawer>
+      {/*算法详情*/}
+      <AlgorithmDetail
+        algorithm={currentRow}
+        showDetail={showDetail}
+        setShowDetail={setShowDetail}
+        setCurrentRow={setCurrentRow}
+      />
     </PageContainer>
   );
 };
 
-export default TableList;
+export default AlgorithmList;

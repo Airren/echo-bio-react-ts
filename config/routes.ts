@@ -39,7 +39,7 @@
   {
     name: '分析算法',
     icon: 'table',
-    path: '/algo/list',
+    path: '/algo/card_list',
     component: './Algorithm',
   },
   {
@@ -48,6 +48,19 @@
     path: '/job/create',
     component: './Job/CreateForm',
   },
+  {
+    name: '算法管理',
+    icon: 'table',
+    path: '/algo/list',
+    component: './TableList',
+  },
+  {
+    name: '新建算法',
+    icon: 'table',
+    path: '/algo/create',
+    component: './advanced-form',
+  },
+
   //   {
   //     name: '任务提交',
   //     icon: 'job',

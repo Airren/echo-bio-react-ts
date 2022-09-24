@@ -61,7 +61,7 @@ const JobCreateForm: FC<JobItem> = () => {
                   width="md"
                   label="绘图方式"
                   name="algorithm"
-                  initialValue={algorithm.id}
+                  initialValue={algorithm.name}
                   hidden={true}
                 />
                 <ProFormText

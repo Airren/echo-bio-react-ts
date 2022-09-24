@@ -1,9 +1,7 @@
 export interface Item {
-  key?: number;
-  id?: number;
-  disabled?: boolean;
+  id: string;
   createdBy?: string;
-  createdTime?: Date;
-  lastModifiedBy?: string;
-  lastModifiedTime?: Date;
+  createdAt?: Date;
+  updatedBy?: string;
+  updatedAt?: Date;
 }

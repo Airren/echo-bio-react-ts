@@ -1,20 +1,25 @@
-export type Parameter = {
-  name: string;
-  label: string;
-  required: boolean;
-  description: string;
-  type: 'string' | 'file' | 'radio' | 'select';
-  value_list: string[];
-};
+import type Item from './data';
+import type { UploadFile } from 'antd/es/upload';
 
-export type AlgorithmItem = {
-  id: number;
+export interface ParameterItem extends Item {
+  id: string;
+  name?: string;
+  label?: string;
+  required?: boolean | string;
+  description?: string;
+  type?: 'string' | 'file' | 'radio' | 'select';
+  value_list?: string[];
+}
+
+export interface AlgorithmItem extends Item {
+  id: string;
   name: string;
   label: string;
-  image: string;
+  image: UploadFile[] | string;
   description: string;
   price: number;
   favorite: number;
-  parameter: Parameter[];
+  parameters: ParameterItem[];
   document: string;
-};
+  update_at: string;
+}
