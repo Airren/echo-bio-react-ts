@@ -1,19 +1,17 @@
-import { Card, Col, Divider, message, Row } from 'antd';
-// import ReactMarkdown from "react-markdown";
+import { Card, Col, message, Row } from 'antd';
 import ProForm, { ProFormText, ProFormTextArea, ProFormUploadDragger } from '@ant-design/pro-form';
-import { useRequest } from 'umi';
-import type { Dispatch, FC } from 'react';
+import { history, useLocation, useRequest } from 'umi';
+import type { FC } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { createJob } from '@/services/job';
 import styles from './style.less';
-import type { RouteComponentProps } from 'react-router';
+import type { JobItem } from '@/models/job';
+import { createJob } from '@/services/job';
+import type { AlgorithmItem } from '@/models/algorithm';
+import ReactMarkdown from 'react-markdown';
+import { GridContent } from '@ant-design/pro-components';
+import remarkGfm from 'remark-gfm';
 
-interface InstanceProps extends RouteComponentProps {
-  // @ts-ignore
-  dispatch: Dispatch;
-}
-
-const FormBasicForm: FC<InstanceProps> = () => {
+const JobCreateForm: FC<JobItem> = () => {
   const { run } = useRequest(createJob, {
     manual: true,
     onSuccess: () => {
@@ -21,35 +19,38 @@ const FormBasicForm: FC<InstanceProps> = () => {
     },
   });
 
-  console.log('>>>>>> list value >>>>>>>>>>');
-  // var algo = this.props.location.state;
-
-  const onFinish = async (values: any) => {
-    console.log('>>>>> this is the in put value ');
-    console.log(values);
-    const formData = new FormData();
-    const file = values.upload[0];
-    console.log(file);
-
-    formData.append('file', file);
-    console.log('1');
-
-    formData.append('key1', 'va1');
-    console.log('2');
-    await run(formData, { algorithm: values.algorithm, name: values.name });
+  const onFinish = async (values: JobItem) => {
+    console.log('>>>>>>>>>>>>>>>> test', values.inputFile[0], '>>>>>>>>>>>>>>>> test');
+    await run(values, '');
   };
 
-  //   const makedown = `
-  // #### This is a value
-  // `
+  const location = useLocation();
+  const algorithm: AlgorithmItem = location.state;
+  if (!algorithm) {
+    history.push({
+      pathname: '/algo/list',
+    });
+  }
+
+  const content = <ReactMarkdown remarkPlugins={[remarkGfm]}>{algorithm.document}</ReactMarkdown>;
+  console.log('>>>>>>>>>>>> document', algorithm.document);
+
+  const header = (
+    <>
+      <div>
+        <h1>{algorithm.name}</h1>
+      </div>
+      {algorithm.description}
+    </>
+  );
+
   return (
-    <PageContainer content="Pie 饼状图用于比例分析">
-      <Row gutter={[26, 26]}>
-        <Col span={12}>
-          <Row>
+    <PageContainer content={header}>
+      <GridContent>
+        <Row gutter={24}>
+          <Col lg={10} md={24}>
             <Card bordered={false}>
               <ProForm
-                hideRequiredMark
                 style={{ margin: 'auto', marginTop: 8, maxWidth: 600 }}
                 name="basic"
                 layout="vertical"
@@ -60,7 +61,7 @@ const FormBasicForm: FC<InstanceProps> = () => {
                   width="md"
                   label="绘图方式"
                   name="algorithm"
-                  initialValue={'pie'}
+                  initialValue={algorithm.id}
                   hidden={true}
                 />
                 <ProFormText
@@ -78,15 +79,12 @@ const FormBasicForm: FC<InstanceProps> = () => {
                 <ProFormUploadDragger
                   label="数据表格"
                   tooltip="文件应为txt格式，数据表必须包含行头和列头，如图1。数据与数据之间务必用制表符隔开（tab符），不能用空格"
-                  name="upload"
+                  name="inputFile"
                   fieldProps={{
                     name: 'file',
-                    listType: 'picture-card',
                     multiple: false,
                   }}
-
-                  // action="/upload.do"
-                  // extra="longgggggggggggggggggggggggggggggggggg"
+                  // action="http://localhost:8080/api/v1/file/upload"
                 />
 
                 <ProFormTextArea
@@ -103,20 +101,14 @@ const FormBasicForm: FC<InstanceProps> = () => {
                 />
               </ProForm>
             </Card>
-          </Row>
-
-          <Divider> </Divider>
-          <Row></Row>
-
-          <Divider> </Divider>
-        </Col>
-        <Col span={12}>
-          {' '}
-          <Card>{/*<ReactMarkdown children={makedown}></ReactMarkdown>*/}</Card>
-        </Col>
-      </Row>
+          </Col>
+          <Col lg={14} md={24}>
+            <Card>{content}</Card>
+          </Col>
+        </Row>
+      </GridContent>
     </PageContainer>
   );
 };
 
-export default FormBasicForm;
+export default JobCreateForm;

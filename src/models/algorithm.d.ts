@@ -16,4 +16,5 @@ export type AlgorithmItem = {
   price: number;
   favorite: number;
   parameter: Parameter[];
+  document: string;
 };

@@ -21,23 +21,8 @@ const AlgorithmCardList = () => {
   const content = (
     <div className={styles.pageHeaderContent}>
       <p>
-        段落示意：蚂蚁金服务设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，
-        提供跨越设计与开发的体验解决方案。
+        逆耳生物云分析平台，开箱即用，一站式生物数据分析，提供跨越生物与数据科学的体验解决方案。
       </p>
-      <div className={styles.contentLink}>
-        <a>
-          <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/MjEImQtenlyueSmVEfUD.svg" />{' '}
-          快速开始
-        </a>
-        <a>
-          <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/NbuDUAuBlIApFuDvWiND.svg" />{' '}
-          产品简介
-        </a>
-        <a>
-          <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg" />{' '}
-          产品文档
-        </a>
-      </div>
     </div>
   );
 
@@ -77,14 +62,8 @@ const AlgorithmCardList = () => {
                   ]}
                   onClick={() =>
                     history.push({
-                      pathname: '/job/job_form',
-                      state: {
-                        protocol: 'https',
-                        //     // hostname: record.ip,
-                        //     // port: record.port,
-                        //     // username: record.username,
-                        //     // password: record.password,
-                      },
+                      pathname: '/job/create',
+                      state: { ...item },
                     })
                   }
                 >

@@ -37,22 +37,16 @@
     ],
   },
   {
-    name: '云分析',
+    name: '分析算法',
     icon: 'table',
-    path: '/cloud_analysis',
-    component: './TableList',
-  },
-  {
-    name: '云分析2',
-    icon: 'table',
-    path: '/job',
+    path: '/algo/list',
     component: './Algorithm',
   },
   {
-    name: '云分析3',
+    // name: '任务提交',
     icon: 'table',
-    path: '/jobe',
-    component: './TableList',
+    path: '/job/create',
+    component: './Job/CreateForm',
   },
   //   {
   //     name: '任务提交',
