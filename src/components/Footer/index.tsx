@@ -1,5 +1,6 @@
 import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
+import React from 'react';
 
 const Footer: React.FC = () => {
   const defaultMessage = '上海亿氪信息技术有限公司出品';

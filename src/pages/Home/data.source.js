@@ -4,7 +4,7 @@ export const Nav00DataSource = {
   page: { className: 'home-page' },
   logo: {
     className: 'header0-logo',
-    children: 'https://os.alipayobjects.com/rmsportal/mlcYmsRilwraoAe.svg',
+    children: './logo.png',
   },
   Menu: {
     className: 'header0-menu',
@@ -26,7 +26,7 @@ export const Nav00DataSource = {
                 {
                   name: 'image0',
                   className: 'item-image',
-                  children: 'https://gw.alipayobjects.com/zos/rmsportal/ruHbkzzMKShUpDYMEmHM.svg',
+                  children: './logo.png',
                 },
                 {
                   name: 'title',
@@ -50,7 +50,7 @@ export const Nav00DataSource = {
                 {
                   name: 'image0',
                   className: 'item-image',
-                  children: 'https://gw.alipayobjects.com/zos/rmsportal/ruHbkzzMKShUpDYMEmHM.svg',
+                  children: './logo.png',
                 },
                 {
                   name: 'title',
@@ -100,11 +100,11 @@ export const Banner01DataSource = {
   textWrapper: { className: 'banner0-text-wrapper' },
   title: {
     className: 'banner0-title',
-    children: 'https://zos.alipayobjects.com/rmsportal/HqnZZjBjWRbjyMr.png',
+    children: 'http://www.neo-bio.cn//static/upload/image/20210430/1619760918134343.png',
   },
   content: {
     className: 'banner0-content',
-    children: '一个高效的页面动画解决方案',
+    children: '一站式生物数据分析解决方案',
   },
   button: { className: 'banner0-button', children: 'Learn More' },
 };

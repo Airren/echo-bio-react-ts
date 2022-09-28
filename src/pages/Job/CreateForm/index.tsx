@@ -1,27 +1,30 @@
 import { Card, Col, message, Row } from 'antd';
-import ProForm, { ProFormText, ProFormTextArea, ProFormUploadDragger } from '@ant-design/pro-form';
-import { history, useLocation, useRequest } from 'umi';
+import ProForm, { ProFormText, ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
+import { useLocation, useRequest } from 'umi';
 import type { FC } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import styles from './style.less';
-import type { JobItem } from '@/models/job';
-import { createJob } from '@/services/job';
-import type { AlgorithmItem } from '@/models/algorithm';
-import ReactMarkdown from 'react-markdown';
+import { fakeSubmitForm } from './service';
 import { GridContent } from '@ant-design/pro-components';
+import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import type { AlgorithmItem } from '@/models/algorithm';
+import { history } from '@@/core/history';
+import { FileUploadPath } from '@/models/const-value';
+import styles from './style.less';
+import cardStyles from '../../Algorithm/CardList/style.less';
+import Paragraph from 'antd/lib/typography/Paragraph';
 
-const JobCreateForm: FC<JobItem> = () => {
-  const { run } = useRequest(createJob, {
+const BasicForm: FC<Record<string, any>> = () => {
+  const { run } = useRequest(fakeSubmitForm, {
     manual: true,
     onSuccess: () => {
       message.success('提交成功');
     },
   });
 
-  const onFinish = async (values: JobItem) => {
-    console.log('>>>>>>>>>>>>>>>> test', values.inputFile[0], '>>>>>>>>>>>>>>>> test');
-    await run(values, '');
+  const onFinish = async (values: Record<string, any>) => {
+    console.log('>>>>>>>>> this is the value', values);
+    await run(values);
   };
 
   const location = useLocation();
@@ -32,16 +35,71 @@ const JobCreateForm: FC<JobItem> = () => {
     });
   }
 
+  const parameterForm = (
+    <>
+      {algorithm.parameters.map((x) => {
+        switch (x.type) {
+          case 'string':
+            return (
+              <ProFormText
+                width="md"
+                label={x.label}
+                name={x.name}
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入',
+                  },
+                ]}
+                placeholder={'请输入' + x.label}
+              />
+            );
+          case 'file':
+            return (
+              <ProFormUploadButton
+                label={x.label}
+                // tooltip="文件应为txt格式，数据表必须包含行头和列头，如图1。数据与数据之间务必用制表符隔开（tab符），不能用空格"
+                tooltip={x.description}
+                name={x.name}
+                width={'md'}
+                max={1}
+                fieldProps={{
+                  name: 'file',
+                  multiple: false,
+                }}
+                action={FileUploadPath}
+              />
+            );
+          case 'select':
+            return <></>;
+          case 'radio':
+            return <></>;
+          default:
+            return <></>;
+        }
+      })}
+    </>
+  );
   const content = <ReactMarkdown remarkPlugins={[remarkGfm]}>{algorithm.document}</ReactMarkdown>;
-  console.log('>>>>>>>>>>>> document', algorithm.document);
 
   const header = (
-    <>
-      <div>
-        <h1>{algorithm.name}</h1>
-      </div>
-      {algorithm.description}
-    </>
+    <Card className={cardStyles.card} bordered={false}>
+      <Card.Meta
+        avatar={
+          <img
+            alt=""
+            className={cardStyles.cardAvatar}
+            src={typeof algorithm.image === 'string' ? algorithm.image : ''}
+          />
+        }
+        title={<a>{algorithm.name}</a>}
+        description={
+          <Paragraph className={cardStyles.item} ellipsis={{ rows: 3 }}>
+            {algorithm.description}
+          </Paragraph>
+        }
+      />
+    </Card>
   );
 
   return (
@@ -51,10 +109,10 @@ const JobCreateForm: FC<JobItem> = () => {
           <Col lg={10} md={24}>
             <Card bordered={false}>
               <ProForm
+                requiredMark
                 style={{ margin: 'auto', marginTop: 8, maxWidth: 600 }}
                 name="basic"
                 layout="vertical"
-                initialValues={{ public: '1' }}
                 onFinish={onFinish}
               >
                 <ProFormText
@@ -64,29 +122,8 @@ const JobCreateForm: FC<JobItem> = () => {
                   initialValue={algorithm.name}
                   hidden={true}
                 />
-                <ProFormText
-                  width="md"
-                  label="任务名称"
-                  name="name"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入任务名称',
-                    },
-                  ]}
-                  placeholder="给分析起个名字"
-                />
-                <ProFormUploadDragger
-                  label="数据表格"
-                  tooltip="文件应为txt格式，数据表必须包含行头和列头，如图1。数据与数据之间务必用制表符隔开（tab符），不能用空格"
-                  name="inputFile"
-                  fieldProps={{
-                    name: 'file',
-                    multiple: false,
-                  }}
-                  // action="http://localhost:8080/api/v1/file/upload"
-                />
 
+                {parameterForm}
                 <ProFormTextArea
                   label={
                     <span>
@@ -111,4 +148,4 @@ const JobCreateForm: FC<JobItem> = () => {
   );
 };
 
-export default JobCreateForm;
+export default BasicForm;

@@ -15,11 +15,13 @@ export interface AlgorithmItem extends Item {
   id: string;
   name: string;
   label: string;
+  group: string;
   image: UploadFile[] | string;
   description: string;
   price: number;
   favorite: number;
   parameters: ParameterItem[];
+  command: string;
   document: string;
   update_at: string;
 }

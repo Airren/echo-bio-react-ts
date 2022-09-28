@@ -1,12 +1,18 @@
 import { Card, Col, Row, message } from 'antd';
 
 import type { FC } from 'react';
-import ProForm, { ProFormText, ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
+import ProForm, {
+  ProFormMoney,
+  ProFormSelect,
+  ProFormText,
+  ProFormTextArea,
+  ProFormUploadButton,
+} from '@ant-design/pro-form';
 import type { ProColumnType } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-// import {fakeSubmitForm} from './service';
 import styles from './style.less';
+
 import { FileUploadPath } from '@/models/const-value';
 import type { AlgorithmItem, ParameterItem } from '@/models/algorithm';
 import { createAlgorithm } from '@/services/algorithm';
@@ -50,18 +56,18 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
       title: '参数名',
       dataIndex: 'label',
       key: 'label',
-      width: '20%',
+      width: '15%',
     },
     {
       title: '参数英文',
       dataIndex: 'name',
       key: 'name',
-      width: '20%',
+      width: '15%',
     },
     {
       title: '参数类型',
       key: 'type',
-      width: '20%',
+      width: '15%',
       dataIndex: 'type',
       valueType: 'select',
       valueEnum: {
@@ -82,14 +88,15 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
     },
     {
       title: '参数选项',
-      key: 'option',
-      dataIndex: 'option',
+      key: 'value_list',
+      dataIndex: 'value_list',
+      width: '15%',
     },
     {
-      title: '参数必要性',
+      title: '必要性',
       dataIndex: 'required',
       key: 'required',
-      width: '20%',
+      width: '15%',
       valueEnum: {
         true: {
           text: '必选',
@@ -100,6 +107,12 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
           status: 'Success',
         },
       },
+    },
+    {
+      title: '描述',
+      key: 'description',
+      dataIndex: 'description',
+      width: '15%',
     },
     {
       title: '操作',
@@ -190,6 +203,42 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
               />
             </Col>
           </Row>
+          <Row gutter={16}>
+            <Col lg={6} md={12} sm={24}>
+              <ProFormSelect
+                name="group"
+                label="算法分类"
+                width="md"
+                rules={[
+                  {
+                    required: true,
+                    message: '请输选择分类！',
+                  },
+                ]}
+                valueEnum={{
+                  default: '默认分类',
+                  ai: '智能分析',
+                  open: 'Unresolved',
+                  closed: 'Resolved',
+                }}
+              />
+            </Col>
+            <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
+              <ProFormMoney
+                name="price"
+                width="md"
+                label="分析定价"
+                placeholder="请输入分析定价"
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入分析定价！',
+                  },
+                ]}
+              />
+            </Col>
+          </Row>
+
           <ProFormTextArea
             name="description"
             label="算法简介"
@@ -226,6 +275,19 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
               rowKey="id"
             />
           </ProForm.Item>
+        </Card>
+        <Card title="命令模板" className={styles.card} bordered={false}>
+          <ProFormTextArea
+            name="command"
+            label="命令模板"
+            placeholder="请输入命令模板"
+            rules={[
+              {
+                required: true,
+                message: '请输入命令模板！',
+              },
+            ]}
+          />
         </Card>
       </PageContainer>
     </ProForm>

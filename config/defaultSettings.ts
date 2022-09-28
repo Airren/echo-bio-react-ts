@@ -8,6 +8,8 @@ const Settings: LayoutSettings & {
   // 拂晓蓝
   primaryColor: '#1890ff',
   layout: 'top',
+  // splitMenus: true,
+  menu: { locale: false },
   contentWidth: 'Fluid',
   fixedHeader: false,
   fixSiderbar: true,

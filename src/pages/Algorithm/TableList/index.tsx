@@ -14,8 +14,8 @@ import React, { useRef, useState } from 'react';
 import { FormattedMessage } from 'umi';
 import type { AlgorithmItem } from '@/models/algorithm';
 import { queryRule } from '@/services/algorithm';
-import type { FormValueType } from '@/pages/TableList/components/UpdateForm';
-import JobAddForm from '@/pages/TableList/components/UpdateForm';
+import type { FormValueType } from '@/pages/Algorithm/TableList/components/UpdateForm';
+import JobAddForm from '@/pages/Algorithm/TableList/components/UpdateForm';
 import AlgorithmDetail from './components/AlgorithmDetails';
 
 /**

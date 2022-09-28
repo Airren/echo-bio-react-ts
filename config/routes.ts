@@ -40,10 +40,11 @@
     name: '分析算法',
     icon: 'table',
     path: '/algo/card_list',
-    component: './Algorithm',
+    component: './Algorithm/CardList',
   },
   {
-    // name: '任务提交',
+    name: '任务提交',
+    hideInMenu: true,
     icon: 'table',
     path: '/job/create',
     component: './Job/CreateForm',
@@ -52,13 +53,13 @@
     name: '算法管理',
     icon: 'table',
     path: '/algo/list',
-    component: './TableList',
+    component: './Algorithm/TableList',
   },
   {
     name: '新建算法',
     icon: 'table',
     path: '/algo/create',
-    component: './advanced-form',
+    component: './Algorithm/CreateForm',
   },
 
   //   {
