@@ -1,4 +1,4 @@
-export interface Item {
+export class Item {
   id: string;
   createdBy?: string;
   createdAt?: Date;

@@ -9,6 +9,8 @@ import { JwtToken } from '@/models/const-value';
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
+  console.log('>>>>>>>>>>>> come into login11111111');
+
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
@@ -24,6 +26,7 @@ const Login: React.FC = () => {
   useRequest<API.Token>(async () => {
     try {
       // 登录
+      console.log('>>>>>>>>> query user info');
       if (!history) return;
       const { query } = history.location;
       const { code } = query as {
@@ -34,14 +37,19 @@ const Login: React.FC = () => {
       }
 
       const msg = await getToken({ code });
+
+      console.log('>>>>>>>> start login', msg);
       const res: API.LoginResult = msg.data;
+      console.log('>>>>>>>> start login', res);
       if (res.access_token != '') {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
         message.success(defaultLoginSuccessMessage);
+        console.log('>>>>>>>  start set token token set successful');
         localStorage.setItem(JwtToken, res.access_token);
+        console.log('>>>>>>> token set successful');
 
         await fetchUserInfo();
         /** 此方法会跳转到 redirect 参数所在的位置 */

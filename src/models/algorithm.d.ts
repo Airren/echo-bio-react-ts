@@ -25,3 +25,14 @@ export interface AlgorithmItem extends Item {
   document: string;
   update_at: string;
 }
+
+export interface GroupItem extends Item {
+  createdBy?: string;
+  createdAt: Date;
+  updatedBy?: string;
+  updatedAt?: Date;
+  id: string;
+  key: number;
+  name: string;
+  label: string;
+}

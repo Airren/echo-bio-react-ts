@@ -42,7 +42,7 @@ export async function getInitialState(): Promise<{
   };
   // 如果不是登录页面，执行
   console.log('current path is ', history.location.pathname);
-  if (history.location.pathname !== homePath) {
+  if (history.location.pathname !== homePath && history.location.pathname != '/user/login') {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -115,6 +115,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 const authHeaderInterceptor = (url: string, options: any) => {
   const tokenVal = localStorage.getItem(JwtToken);
   const authHeader = { token: tokenVal };
+  console.log('>>>>> this is the interceptor', url);
   return {
     url: `${url}`,
     options: { ...options, interceptors: true, headers: authHeader },

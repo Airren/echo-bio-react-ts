@@ -61,6 +61,12 @@
     path: '/algo/create',
     component: './Algorithm/CreateForm',
   },
+  {
+    name: '算法分类',
+    icon: 'table',
+    path: '/algo/group`',
+    component: './Algorithm/Group',
+  },
 
   //   {
   //     name: '任务提交',
