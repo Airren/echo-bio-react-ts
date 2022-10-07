@@ -42,9 +42,7 @@ const handleRemove = async (selectedRows: GroupItem[]) => {
   if (!selectedRows) return true;
 
   try {
-    await removeGroup({
-      key: selectedRows.map((row) => row.key),
-    });
+    await removeGroup(selectedRows.map((row) => row.id));
     hide();
     message.success('删除成功，即将刷新');
     return true;
@@ -126,14 +124,13 @@ const TableList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          配置
+          更新
         </a>,
         <a
           key="config2"
-          // onClick={() => {
-          //   handleUpdateModalVisible(true);
-          //   setCurrentRow(record);
-          // }}
+          onClick={() => {
+            handleRemove([record]);
+          }}
         >
           删除
         </a>,
@@ -147,7 +144,7 @@ const TableList: React.FC = () => {
       <ProTable<GroupItem, TableListPagination>
         headerTitle="算法分类"
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="id"
         search={{
           labelWidth: 120,
         }}
@@ -223,6 +220,7 @@ const TableList: React.FC = () => {
           width="md"
           name="name"
           label="分类英文"
+          initialValue={''}
         />
         <ProFormText
           width="md"
@@ -234,6 +232,7 @@ const TableList: React.FC = () => {
               message: '必填项',
             },
           ]}
+          initialValue={''}
         />
       </ModalForm>
 

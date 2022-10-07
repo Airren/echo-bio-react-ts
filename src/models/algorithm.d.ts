@@ -2,7 +2,7 @@ import type Item from './data';
 import type { UploadFile } from 'antd/es/upload';
 
 export interface ParameterItem extends Item {
-  id: string;
+  id: number | string;
   name?: string;
   label?: string;
   required?: boolean | string;
@@ -32,7 +32,7 @@ export interface GroupItem extends Item {
   updatedBy?: string;
   updatedAt?: Date;
   id: string;
-  key: number;
+  // key: number;
   name: string;
   label: string;
 }

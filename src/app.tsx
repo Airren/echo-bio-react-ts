@@ -8,13 +8,11 @@ import { history, Link } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import type { RequestConfig } from '@@/plugin-request/request';
-import { JwtToken } from './models/const-value';
+import { JwtToken, LoginPage } from './models/const-value';
 
 const homePath = '/';
 const isDev = process.env.NODE_ENV === 'development';
-const loginPage =
-  'http://124.223.99.93:8001/login/oauth/authorize?client_id=a0bcc0d85a3e38c46d0d&' +
-  'response_type=code&redirect_uri=http://127.0.0.1:8000/user/login&scope=read&state=echo-bio-react';
+// const loginPage =
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -35,7 +33,7 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser();
       return msg.data;
     } catch (error) {
-      window.location.href = loginPage;
+      window.location.href = LoginPage;
       // history.push(loginPath);
     }
     return undefined;
@@ -68,8 +66,12 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== homePath) {
-        window.location.href = loginPage;
+      if (
+        !initialState?.currentUser &&
+        location.pathname !== homePath &&
+        location.pathname != '/user/login'
+      ) {
+        window.location.href = LoginPage;
       }
     },
     links: isDev

@@ -2,6 +2,7 @@
 /* eslint-disable */
 import { request } from 'umi';
 import { GroupItem } from '@/models/algorithm';
+import { ResponseItem } from '@/models/data';
 
 /** 获取规则列表 GET /api/rule */
 export async function listGroup(
@@ -14,12 +15,7 @@ export async function listGroup(
   },
   options?: { [key: string]: any },
 ) {
-  return request<{
-    data: GroupItem[];
-    /** 列表的内容总数 */
-    total?: number;
-    success?: boolean;
-  }>('/api/v1/algorithm/group/list', {
+  return request<ResponseItem<GroupItem>>('/api/v1/algorithm/group/list', {
     method: 'GET',
     params: {
       ...params,
@@ -47,10 +43,9 @@ export async function addGroup(data: { [key: string]: any }, options?: { [key: s
 }
 
 /** 删除规则 DELETE /api/rule */
-export async function removeGroup(data: { key: number[] }, options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/v1/algorithm/group/delete', {
+export async function removeGroup(data: string[]) {
+  return request('/api/v1/algorithm/group/delete', {
     data,
     method: 'DELETE',
-    ...(options || {}),
   });
 }

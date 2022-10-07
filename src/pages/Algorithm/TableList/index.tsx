@@ -1,14 +1,7 @@
-import { addRule, removeRule, updateRule } from '@/services/ant-design-pro/api';
+import { removeRule, updateRule } from '@/services/ant-design-pro/api';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import {
-  FooterToolbar,
-  ModalForm,
-  PageContainer,
-  ProFormText,
-  ProFormTextArea,
-  ProTable,
-} from '@ant-design/pro-components';
+import { FooterToolbar, PageContainer, ProTable } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import { FormattedMessage } from 'umi';
@@ -17,25 +10,7 @@ import { queryRule } from '@/services/algorithm';
 import type { FormValueType } from '@/pages/Algorithm/TableList/components/UpdateForm';
 import JobAddForm from '@/pages/Algorithm/TableList/components/UpdateForm';
 import AlgorithmDetail from './components/AlgorithmDetails';
-
-/**
- * @en-US Add node
- * @zh-CN 添加节点
- * @param fields
- */
-const handleAdd = async (fields: API.RuleListItem) => {
-  const hide = message.loading('正在添加');
-  try {
-    await addRule({ ...fields });
-    hide();
-    message.success('Added successfully');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Adding failed, please try again!');
-    return false;
-  }
-};
+import { history } from '@@/core/history';
 
 /**
  * @en-US Update node
@@ -90,7 +65,6 @@ const AlgorithmList: React.FC = () => {
    * @en-US Pop-up window of new window
    * @zh-CN 新建窗口的弹窗
    *  */
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   /**
    * @en-US The pop-up window of the distribution update window
    * @zh-CN 分布更新窗口的弹窗
@@ -167,7 +141,10 @@ const AlgorithmList: React.FC = () => {
             type="primary"
             key="primary"
             onClick={() => {
-              handleModalVisible(true);
+              history.push({
+                pathname: '/algo/create',
+                // state: { ...item },
+              });
             }}
           >
             <PlusOutlined />
@@ -213,39 +190,6 @@ const AlgorithmList: React.FC = () => {
           </Button>
         </FooterToolbar>
       )}
-
-      <ModalForm
-        title="新建算法"
-        width="400px"
-        visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-      >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
-      </ModalForm>
 
       <JobAddForm
         onSubmit={async (value) => {

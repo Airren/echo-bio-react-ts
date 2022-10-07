@@ -13,29 +13,29 @@
       },
     ],
   },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    routes: [
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
-      },
-      {
-        component: './404',
-      },
-    ],
-  },
+  // {
+  //   path: '/welcome',
+  //   name: 'welcome',
+  //   icon: 'smile',
+  //   component: './Welcome',
+  // },
+  // {
+  //   path: '/admin',
+  //   name: 'admin',
+  //   icon: 'crown',
+  //   access: 'canAdmin',
+  //   routes: [
+  //     {
+  //       path: '/admin/sub-page',
+  //       name: 'sub-page',
+  //       icon: 'smile',
+  //       component: './Welcome',
+  //     },
+  //     {
+  //       component: './404',
+  //     },
+  //   ],
+  // },
   {
     name: '分析算法',
     icon: 'table',
@@ -52,20 +52,36 @@
   {
     name: '算法管理',
     icon: 'table',
-    path: '/algo/list',
-    component: './Algorithm/TableList',
+    path: '/algo',
+    routes: [
+      {
+        name: '算法列表',
+        path: '/algo/list',
+        component: './Algorithm/TableList',
+      },
+      {
+        name: '新建算法',
+        hideInMenu: true,
+        icon: 'table',
+        path: '/algo/create',
+        component: './Algorithm/CreateForm',
+      },
+      {
+        name: '算法分类',
+        icon: 'table',
+        path: '/algo/group',
+        component: './Algorithm/Group',
+      },
+      {
+        component: './404',
+      },
+    ],
   },
   {
-    name: '新建算法',
+    name: '文件管理',
     icon: 'table',
-    path: '/algo/create',
-    component: './Algorithm/CreateForm',
-  },
-  {
-    name: '算法分类',
-    icon: 'table',
-    path: '/algo/group`',
-    component: './Algorithm/Group',
+    path: '/file/list',
+    component: './File',
   },
 
   //   {

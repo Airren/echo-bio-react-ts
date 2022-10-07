@@ -16,6 +16,8 @@ import styles from './style.less';
 import { FileUploadPath } from '@/models/const-value';
 import type { AlgorithmItem, ParameterItem } from '@/models/algorithm';
 import { createAlgorithm } from '@/services/algorithm';
+import { listGroup } from '@/pages/Algorithm/Group/service';
+import { useRequest } from 'umi';
 
 const initialParameterItems: ParameterItem[] = [
   {
@@ -33,6 +35,7 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
       if (typeof val.required === 'string') {
         val.required = 'true' === val.required;
       }
+      val.id = 0;
     });
     let firstImage = '';
     if (typeof value.image !== 'string') {
@@ -50,6 +53,16 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
       // console.log
     }
   };
+
+  const { data: listData } = useRequest(() => {
+    return listGroup({}, {});
+  });
+
+  const groups = listData || [];
+
+  const optionsVal = groups.map((val) => {
+    return { value: val.id, label: val.label };
+  });
 
   const columns: ProColumnType<ParameterItem>[] = [
     {
@@ -215,12 +228,9 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
                     message: '请输选择分类！',
                   },
                 ]}
-                valueEnum={{
-                  default: '默认分类',
-                  ai: '智能分析',
-                  open: 'Unresolved',
-                  closed: 'Resolved',
-                }}
+                // onMetaChange={onChange}
+
+                options={optionsVal}
               />
             </Col>
             <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
