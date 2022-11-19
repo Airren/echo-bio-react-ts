@@ -1,17 +1,33 @@
-import { Card, List, Typography } from 'antd';
+import { Card, Form, List, Typography } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { history, useRequest } from 'umi';
 import styles from './style.less';
 import type { AlgorithmItem } from '@/models/algorithm';
 import { queryAlgorithmList } from '@/services/algorithm';
+import StandardFormRow from './components/StandardFormRow';
+import TagSelect from './components/TagSelect';
+import { listGroup } from '@/pages/Algorithm/Group/service';
 
 const { Paragraph } = Typography;
 
+const { Option } = TagSelect;
+
 const AlgorithmCardList = () => {
-  const { data, loading } = useRequest(() => {
+  const { data, loading, run } = useRequest((values: any) => {
+    console.log('form data', values);
     return queryAlgorithmList({
       count: 8,
     });
+  });
+
+  const { data: listData } = useRequest(() => {
+    return listGroup({}, {});
+  });
+
+  const groups = listData || [];
+
+  const optionsVal = groups.map((val) => {
+    return <Option value={val.id}>{val.label}</Option>;
   });
 
   console.log('>>>>>>>>>>>', data);
@@ -26,16 +42,22 @@ const AlgorithmCardList = () => {
     </div>
   );
 
-  const extraContent = (
-    <div className={styles.extraImg}>
-      <img
-        alt="这是一个标题"
-        src="https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png"
-      />
-    </div>
-  );
   return (
-    <PageContainer content={content} extraContent={extraContent}>
+    <PageContainer content={content}>
+      <Card bordered={false}>
+        <Form
+          onValuesChange={(_, values) => {
+            run(values);
+          }}
+        >
+          <StandardFormRow title="所属类目">
+            <Form.Item name="category">
+              <TagSelect expandable>{optionsVal}</TagSelect>
+            </Form.Item>
+          </StandardFormRow>
+        </Form>
+      </Card>
+      <br />
       <div className={styles.cardList}>
         <List<Partial<AlgorithmItem>>
           rowKey="id"
