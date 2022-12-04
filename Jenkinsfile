@@ -9,8 +9,9 @@ pipeline {
       stage('node build') {
         steps{
           sh "pwd"
-          sh "npm install"
-          sh "npm build"
+          sh "ls"
+          sh "PATH=/usr/local/node18/bin:$PATH yarn "
+          sh "PATH=/usr/local/node18/bin:$PATH NODE_OPTIONS=--openssl-legacy-provider yarn build"
         }
       }
     stage('Building image') {
