@@ -117,7 +117,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 const authHeaderInterceptor = (url: string, options: any) => {
   const tokenVal = localStorage.getItem(JwtToken);
   const authHeader = { token: tokenVal };
-  console.log('>>>>> this is the interceptor', url);
   return {
     url: `${url}`,
     options: { ...options, interceptors: true, headers: authHeader },

@@ -75,7 +75,7 @@
         component: './Algorithm/Group',
       },
       {
-        component: './404',
+        component: './Algorithm/TableList',
       },
     ],
   },

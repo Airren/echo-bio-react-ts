@@ -6,11 +6,12 @@ import { Button, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import { FormattedMessage } from 'umi';
 import type { AlgorithmItem } from '@/models/algorithm';
-import { queryRule } from '@/services/algorithm';
+import { queryAlgorithmsForTable } from '@/services/algorithm';
 import type { FormValueType } from '@/pages/Algorithm/TableList/components/UpdateForm';
 import JobAddForm from '@/pages/Algorithm/TableList/components/UpdateForm';
 import AlgorithmDetail from './components/AlgorithmDetails';
 import { history } from '@@/core/history';
+import type { TableListPagination } from '@/models/data';
 
 /**
  * @en-US Update node
@@ -80,7 +81,8 @@ const AlgorithmList: React.FC = () => {
   const columns: ProColumns<AlgorithmItem>[] = [
     {
       title: '算法名称',
-      dataIndex: 'name',
+      dataIndex: 'label',
+      valueType: 'textarea',
       render: (dom, entity) => {
         return (
           <a
@@ -98,10 +100,12 @@ const AlgorithmList: React.FC = () => {
       title: '描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      search: false,
     },
     {
       title: '更新时间',
       sorter: true,
+      search: false,
       dataIndex: 'updated_at',
       valueType: 'dateTime',
       renderFormItem: (item, { defaultRender }) => {
@@ -116,12 +120,24 @@ const AlgorithmList: React.FC = () => {
         <Button
           type={'primary'}
           key="config"
+          size={'small'}
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
           }}
         >
-          更新算法
+          更新
+        </Button>,
+        <Button
+          type={'primary'}
+          key="config"
+          size={'small'}
+          onClick={() => {
+            handleUpdateModalVisible(true);
+            setCurrentRow(record);
+          }}
+        >
+          删除
         </Button>,
       ],
     },
@@ -129,12 +145,17 @@ const AlgorithmList: React.FC = () => {
 
   return (
     <PageContainer>
-      <ProTable<AlgorithmItem, API.PageParams>
+      <ProTable<AlgorithmItem, TableListPagination>
         headerTitle="分析算法"
         actionRef={actionRef}
         rowKey="key"
         search={{
           labelWidth: 120,
+        }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          current: 1,
         }}
         toolBarRender={() => [
           <Button
@@ -151,7 +172,7 @@ const AlgorithmList: React.FC = () => {
             {'新建算法'}
           </Button>,
         ]}
-        request={queryRule}
+        request={queryAlgorithmsForTable}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {

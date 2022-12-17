@@ -59,7 +59,7 @@ const AlgorithmCardList = () => {
       </Card>
       <br />
       <div className={styles.cardList}>
-        <List<Partial<AlgorithmItem>>
+        <List<AlgorithmItem>
           rowKey="id"
           loading={loading}
           grid={{
