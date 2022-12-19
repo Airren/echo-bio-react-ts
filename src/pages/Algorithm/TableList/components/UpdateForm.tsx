@@ -7,7 +7,7 @@ import {
 } from '@ant-design/pro-form';
 import { Modal } from 'antd';
 import React from 'react';
-import { FileUploadPath } from '@/models/const-value';
+import { FileUploadPath, JwtToken } from '@/models/const-value';
 
 export type FormValueType = {
   target?: string;
@@ -137,6 +137,10 @@ const JobAddForm: React.FC<UpdateFormProps> = (props) => {
           fieldProps={{
             name: 'file',
             listType: 'picture-card',
+            accept: '.jpeg,.jpg,.png',
+            data: { fileType: 'IMAGE' },
+            headers: { token: localStorage.getItem(JwtToken) || '' },
+            className: 'upload-list-inline',
           }}
           action={FileUploadPath}
           extra="最大像素支持256*256"

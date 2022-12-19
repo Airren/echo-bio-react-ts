@@ -203,9 +203,9 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
                 max={1}
                 action={FileUploadPath}
                 fieldProps={{
-                  listType: 'picture',
-                  accept: '.jpeg,.jpg,.png',
                   name: 'file',
+                  listType: 'picture-card',
+                  accept: '.jpeg,.jpg,.png',
                   data: { fileType: 'IMAGE' },
                   headers: { token: localStorage.getItem(JwtToken) || '' },
                   className: 'upload-list-inline',
