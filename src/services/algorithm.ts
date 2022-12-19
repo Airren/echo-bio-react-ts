@@ -28,7 +28,7 @@ export async function queryAlgorithmsForTable(
 ) {
   const pageInfo: PageInfo = getPageInfo(params, options);
   const algorithm: Partial<AlgorithmItem> = {
-    name: params.name,
+    label: params.label,
   };
 
   return request<{

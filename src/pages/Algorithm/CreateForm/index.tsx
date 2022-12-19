@@ -13,7 +13,7 @@ import { EditableProTable } from '@ant-design/pro-table';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import styles from './style.less';
 
-import { FileUploadPath } from '@/models/const-value';
+import { FileUploadPath, JwtToken } from '@/models/const-value';
 import type { AlgorithmItem, ParameterItem } from '@/models/algorithm';
 import { createAlgorithm } from '@/services/algorithm';
 import { listGroup } from '@/pages/Algorithm/Group/service';
@@ -201,11 +201,15 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
                 name="image"
                 label="上传主图"
                 max={1}
-                fieldProps={{
-                  name: 'file',
-                  listType: 'picture-card',
-                }}
                 action={FileUploadPath}
+                fieldProps={{
+                  listType: 'picture',
+                  accept: '.jpeg,.jpg,.png',
+                  name: 'file',
+                  data: { fileType: 'IMAGE' },
+                  headers: { token: localStorage.getItem(JwtToken) || '' },
+                  className: 'upload-list-inline',
+                }}
                 rules={[
                   {
                     required: true,
