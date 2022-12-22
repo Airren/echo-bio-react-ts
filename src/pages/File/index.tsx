@@ -1,17 +1,23 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Popover } from 'antd';
+import { CheckCircleOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Card, message, Popover, Tag } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
-import type { FormValueType } from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
-import { file, addFile, updateFile, removeFile } from './service';
+import {
+  ModalForm,
+  ProFormRadio,
+  ProFormText,
+  ProFormTextArea,
+  ProFormUploadButton,
+} from '@ant-design/pro-form';
+import { fileInfo, removeFile } from './service';
 import type { TableListPagination } from './data';
-import type { FileItem } from '@/models/job';
-import { FileUploadPath } from '@/models/const-value';
+import { FileUploadPath, JwtToken } from '@/models/const-value';
 import copy from 'copy-to-clipboard';
+import type { FileItem } from '@/models/file';
+import { queryFilesForTable } from '@/services/file';
+import UpdateForm from '@/pages/File/components/UpdateForm';
 
 /**
  * 添加节点
@@ -21,7 +27,6 @@ import copy from 'copy-to-clipboard';
 
 const handleAdd = async (fields: FileItem) => {
   const hide = message.loading('正在添加');
-
   let firstImage = '';
   if (typeof fields.files !== 'string') {
     fields.files.forEach((val) => {
@@ -29,14 +34,10 @@ const handleAdd = async (fields: FileItem) => {
     });
     fields.files = firstImage.toString();
   }
-
   fields.id = fields.files;
-  // fields.id = BigInt(fields.files)
 
-  console.log('>>> upload image', fields.id);
-  console.log('>>> upload image', fields.files);
   try {
-    await addFile({ ...fields });
+    await fileInfo({ ...fields });
     hide();
     message.success('添加成功');
     return true;
@@ -50,14 +51,15 @@ const handleAdd = async (fields: FileItem) => {
  * 更新节点
  *
  * @param fields
+ * @param current
  */
 
-const handleUpdate = async (fields: FormValueType, currentRow?: FileItem) => {
+const handleUpdate = async (fields: FileItem, current: FileItem | undefined) => {
   const hide = message.loading('正在配置');
 
   try {
-    await updateFile({
-      ...currentRow,
+    await fileInfo({
+      ...current,
       ...fields,
     });
     hide();
@@ -102,63 +104,124 @@ const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<FileItem>();
   const [selectedRowsState, setSelectedRows] = useState<FileItem[]>([]);
-  /** 国际化配置 */
 
   const columns: ProColumns<FileItem>[] = [
     {
       title: '文件名称',
       dataIndex: 'name',
+
+      render: (val, entity) => {
+        return (
+          <span style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}>
+            <a href={entity.URLPath}>{val + '.' + entity.file_type || '--'}</a>
+          </span>
+        );
+      },
+    },
+    {
+      title: '权限',
+      dataIndex: 'is_public',
+      render: (val, entity) => {
+        if (entity.is_public == 1) {
+          return (
+            <Tag icon={<CheckCircleOutlined />} color="success">
+              公开
+            </Tag>
+          );
+        } else {
+          return (
+            <Tag icon={<ExclamationCircleOutlined />} color="warning">
+              私有
+            </Tag>
+          );
+        }
+      },
+      valueType: 'select',
+      valueEnum: {
+        all: {
+          text: '全部',
+        },
+        public: {
+          text: '公开',
+        },
+        private: {
+          text: '私有',
+        },
+      },
     },
     {
       title: '描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      search: false,
     },
     {
       title: '链接',
-      dataIndex: 'URLPath',
+      hideInTable: true,
+      search: false,
       valueType: 'text',
-      render: (dom, entity) => {
+      render: (val, entity) => {
         return (
-          <Popover content="点击复制">
-            <Button
+          <Popover content="点击复制链接">
+            <Card
               onClick={() => {
                 copy(entity.URLPath);
               }}
             >
-              {' '}
-              {dom}
-            </Button>
+              <span style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}>{val || '--'}</span>
+            </Card>
           </Popover>
         );
       },
     },
     {
       title: '缩略图',
+      search: false,
       dataIndex: 'URLPath',
       valueType: 'image',
     },
     {
       title: '上传时间',
+      search: false,
+      sorter: true,
+      dataIndex: 'created_at',
+      valueType: 'dateTime',
+    },
+    {
+      title: '更新时间',
+      search: false,
       sorter: true,
       dataIndex: 'updated_at',
       valueType: 'dateTime',
     },
     {
       title: '操作',
-      // dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => [
-        <a
-          key="config"
+      render: (_, entity) => [
+        <Button
+          key={'update'}
+          size={'small'}
+          type={'primary'}
           onClick={() => {
+            setCurrentRow(entity);
             handleUpdateModalVisible(true);
-            setCurrentRow(record);
           }}
         >
           更新
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
+        </Button>,
+        <Popover key={'copy_url'} content={entity.is_public == 1 ? '点击复制链接' : ''}>
+          <Button
+            size={'small'}
+            type={'ghost'}
+            disabled={entity.is_public == 2}
+            onClick={() => {
+              copy(window.location.host + entity.URLPath);
+            }}
+          >
+            复制
+          </Button>
+        </Popover>,
+        <a key="test" href="https://procomponents.ant.design/">
           删除
         </a>,
       ],
@@ -168,30 +231,37 @@ const TableList: React.FC = () => {
   return (
     <PageContainer>
       <ProTable<FileItem, TableListPagination>
-        headerTitle="查询表格"
+        headerTitle="文件列表"
         actionRef={actionRef}
-        rowKey="id"
+        rowKey={(record) => parseInt(record.id)}
         search={{
           labelWidth: 120,
+        }}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
         }}
         toolBarRender={() => [
           <Button
             type="primary"
             key="primary"
+            size={'small'}
             onClick={() => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> 新建
+            <PlusOutlined /> 上传文件
           </Button>,
         ]}
-        request={file}
+        request={queryFilesForTable}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+        rowSelection={
+          {
+            // onChange: (_, selectedRows) => {
+            //   setSelectedRows(selectedRows);
+            // },
+          }
+        }
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -250,6 +320,7 @@ const TableList: React.FC = () => {
           width="md"
           name="name"
         />
+
         <ProFormUploadButton
           name="files"
           label="上传文件"
@@ -257,6 +328,10 @@ const TableList: React.FC = () => {
           fieldProps={{
             name: 'file',
             listType: 'picture-card',
+            // accept: '.jpeg,.jpg,.png',
+            data: { fileType: 'IMAGE' },
+            headers: { token: localStorage.getItem(JwtToken) || '' },
+            className: 'upload-list-inline',
           }}
           action={FileUploadPath}
           rules={[
@@ -266,16 +341,29 @@ const TableList: React.FC = () => {
             },
           ]}
         />
+        <ProFormRadio.Group
+          initialValue={false}
+          options={[
+            {
+              label: '私有',
+              value: 2,
+            },
+            {
+              label: '公开',
+              value: 1,
+            },
+          ]}
+          label="是否公开"
+          name="is_public"
+        />
         <ProFormTextArea label="文件描述" width="md" name="description" />
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
           const success = await handleUpdate(value, currentRow);
-
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
-
             if (actionRef.current) {
               actionRef.current.reload();
             }

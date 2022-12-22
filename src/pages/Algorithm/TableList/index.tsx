@@ -148,14 +148,13 @@ const AlgorithmList: React.FC = () => {
       <ProTable<AlgorithmItem, TableListPagination>
         headerTitle="分析算法"
         actionRef={actionRef}
-        rowKey="key"
+        rowKey={(record) => parseInt(record.id)}
         search={{
           labelWidth: 120,
         }}
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
-          current: 1,
         }}
         toolBarRender={() => [
           <Button

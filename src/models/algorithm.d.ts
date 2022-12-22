@@ -12,6 +12,7 @@ export interface ParameterItem extends Item {
 }
 
 export interface AlgorithmItem extends Item {
+  id: string;
   name: string;
   label: string;
   group: string;

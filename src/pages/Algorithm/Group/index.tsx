@@ -144,7 +144,7 @@ const TableList: React.FC = () => {
       <ProTable<GroupItem, TableListPagination>
         headerTitle="算法分类"
         actionRef={actionRef}
-        rowKey="id"
+        rowKey={(record) => parseInt(record.id)}
         search={{
           labelWidth: 120,
         }}

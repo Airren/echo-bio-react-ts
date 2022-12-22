@@ -1,32 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
-import { FileItem } from '@/models/job';
-
-/** 获取规则列表 GET /api/rule */
-export async function file(
-  params: {
-    // query
-    /** 当前的页码 */
-    current?: number;
-    /** 页面的容量 */
-    pageSize?: number;
-  },
-  options?: { [key: string]: any },
-) {
-  return request<{
-    data: FileItem[];
-    /** 列表的内容总数 */
-    total?: number;
-    success?: boolean;
-  }>('/api/v1/file/list', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
-}
+import { FileItem } from '@/models/file';
 
 /** 新建规则 PUT /api/rule */
 export async function updateFile(data: { [key: string]: any }, options?: { [key: string]: any }) {
@@ -38,11 +13,11 @@ export async function updateFile(data: { [key: string]: any }, options?: { [key:
 }
 
 /** 新建规则 POST /api/rule */
-export async function addFile(data: { [key: string]: any }, options?: { [key: string]: any }) {
+export async function fileInfo(data: { [key: string]: any }, options?: { [key: string]: any }) {
   console.log('>>>>>> add file');
-  return request<FileItem>('/api/v1/file/create', {
+  return request<FileItem>('/api/v1/file/update', {
     data,
-    method: 'POST',
+    method: 'PUT',
     ...(options || {}),
   });
 }
