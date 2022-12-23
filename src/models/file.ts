@@ -5,7 +5,7 @@ export interface FileItem {
   files: UploadFile[] | string;
   name: string;
   file_type: string;
-  is_public: number | string;
+  visibility: number | string;
   description: string;
   URLPath: string;
 }

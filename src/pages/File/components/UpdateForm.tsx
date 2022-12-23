@@ -1,16 +1,7 @@
 import React, { useEffect } from 'react';
 import { Form } from 'antd';
 import { ProFormText, ProFormTextArea, ProFormRadio, ModalForm } from '@ant-design/pro-form';
-import type { TableListItem } from '../data';
 import type { FileItem } from '@/models/file';
-
-export type FormValueType = {
-  target?: string;
-  template?: string;
-  type?: string;
-  time?: string;
-  frequency?: string;
-} & Partial<TableListItem>;
 
 export type UpdateFormProps = {
   onCancel: () => void;
@@ -28,7 +19,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   });
   return (
     <ModalForm<FileItem>
-      title="新建表单"
+      title="更新文件"
       form={form}
       autoFocusFirstInput
       open={props.updateModalVisible}
@@ -39,6 +30,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       submitTimeout={2000}
       initialValues={props.values}
       onFinish={props.onSubmit}
+      width="400px"
     >
       <ProFormText
         label="文件名称"
@@ -65,7 +57,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           },
         ]}
         label="是否公开"
-        name="is_public"
+        name="visibility"
       />
       <ProFormTextArea label="文件描述" width="md" name="description" />
     </ModalForm>

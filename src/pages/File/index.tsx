@@ -1,9 +1,14 @@
-import { CheckCircleOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Card, message, Popover, Tag } from 'antd';
+import {
+  CheckCircleOutlined,
+  DownSquareOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
+import { Button, Card, message, Modal, Popover, Tag } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
+import ProTable, { TableDropdown } from '@ant-design/pro-table';
 import {
   ModalForm,
   ProFormRadio,
@@ -11,13 +16,12 @@ import {
   ProFormTextArea,
   ProFormUploadButton,
 } from '@ant-design/pro-form';
-import { fileInfo, removeFile } from './service';
-import type { TableListPagination } from './data';
 import { FileUploadPath, JwtToken } from '@/models/const-value';
 import copy from 'copy-to-clipboard';
 import type { FileItem } from '@/models/file';
-import { queryFilesForTable } from '@/services/file';
+import { fileInfo, queryFilesForTable, removeFile } from '@/services/file';
 import UpdateForm from '@/pages/File/components/UpdateForm';
+import type { TableListPagination } from '@/models/data';
 
 /**
  * 添加节点
@@ -55,7 +59,8 @@ const handleAdd = async (fields: FileItem) => {
  */
 
 const handleUpdate = async (fields: FileItem, current: FileItem | undefined) => {
-  const hide = message.loading('正在配置');
+  const hide = message.loading('正在更新');
+  console.log('>>>>>>', fields, current);
 
   try {
     await fileInfo({
@@ -63,11 +68,11 @@ const handleUpdate = async (fields: FileItem, current: FileItem | undefined) => 
       ...fields,
     });
     hide();
-    message.success('配置成功');
+    message.success('更新成功');
     return true;
   } catch (error) {
     hide();
-    message.error('配置失败请重试！');
+    message.error('更新失败请重试！');
     return false;
   }
 };
@@ -77,22 +82,29 @@ const handleUpdate = async (fields: FileItem, current: FileItem | undefined) => 
  * @param selectedRows
  */
 
-const handleRemove = async (selectedRows: FileItem[]) => {
+const handleRemove = async (selectedRows: FileItem[]): Promise<any> => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
-
-  try {
-    await removeFile({
-      id: selectedRows.map((row) => row.id),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
+  Modal.confirm({
+    title: '删除文件',
+    content: '确定删除个' + selectedRows.length + '文件吗？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await removeFile({
+          ids: selectedRows.map((row) => row.id),
+        });
+        hide();
+        message.success('删除成功，即将刷新');
+        return true;
+      } catch (error) {
+        hide();
+        message.error('删除失败，请重试');
+        return false;
+      }
+    },
+  });
 };
 
 const TableList: React.FC = () => {
@@ -109,7 +121,6 @@ const TableList: React.FC = () => {
     {
       title: '文件名称',
       dataIndex: 'name',
-
       render: (val, entity) => {
         return (
           <span style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}>
@@ -120,9 +131,9 @@ const TableList: React.FC = () => {
     },
     {
       title: '权限',
-      dataIndex: 'is_public',
+      dataIndex: 'visibility',
       render: (val, entity) => {
-        if (entity.is_public == 1) {
+        if (entity.visibility == 1) {
           return (
             <Tag icon={<CheckCircleOutlined />} color="success">
               公开
@@ -152,6 +163,7 @@ const TableList: React.FC = () => {
     {
       title: '描述',
       dataIndex: 'description',
+      ellipsis: true,
       valueType: 'textarea',
       search: false,
     },
@@ -197,23 +209,12 @@ const TableList: React.FC = () => {
     {
       title: '操作',
       valueType: 'option',
-      render: (_, entity) => [
-        <Button
-          key={'update'}
-          size={'small'}
-          type={'primary'}
-          onClick={() => {
-            setCurrentRow(entity);
-            handleUpdateModalVisible(true);
-          }}
-        >
-          更新
-        </Button>,
-        <Popover key={'copy_url'} content={entity.is_public == 1 ? '点击复制链接' : ''}>
+      render: (val, entity, _, action) => [
+        <Popover key={'copy_url'} content={entity.visibility == 1 ? '点击复制链接' : ''}>
           <Button
             size={'small'}
-            type={'ghost'}
-            disabled={entity.is_public == 2}
+            type={'link'}
+            disabled={entity.visibility == 2}
             onClick={() => {
               copy(window.location.host + entity.URLPath);
             }}
@@ -221,9 +222,46 @@ const TableList: React.FC = () => {
             复制
           </Button>
         </Popover>,
-        <a key="test" href="https://procomponents.ant.design/">
-          删除
-        </a>,
+        <TableDropdown
+          key="actionGroup"
+          onSelect={() => action?.reload()}
+          menus={[
+            {
+              key: 'edit',
+              name: (
+                <Button
+                  key={'update'}
+                  size={'small'}
+                  type={'link'}
+                  onClick={() => {
+                    setCurrentRow(entity);
+                    handleUpdateModalVisible(true);
+                  }}
+                >
+                  编辑
+                </Button>
+              ),
+            },
+            {
+              key: 'delete',
+              name: (
+                <Button
+                  size={'small'}
+                  type={'link'}
+                  onClick={async () => {
+                    await handleRemove([entity]);
+                    setSelectedRows([]);
+                    actionRef.current?.reloadAndRest?.();
+                  }}
+                >
+                  删除
+                </Button>
+              ),
+            },
+          ]}
+        >
+          <DownSquareOutlined />
+        </TableDropdown>,
       ],
     },
   ];
@@ -235,7 +273,7 @@ const TableList: React.FC = () => {
         actionRef={actionRef}
         rowKey={(record) => parseInt(record.id)}
         search={{
-          labelWidth: 120,
+          labelWidth: 0,
         }}
         pagination={{
           pageSize: 10,
@@ -255,13 +293,11 @@ const TableList: React.FC = () => {
         ]}
         request={queryFilesForTable}
         columns={columns}
-        rowSelection={
-          {
-            // onChange: (_, selectedRows) => {
-            //   setSelectedRows(selectedRows);
-            // },
-          }
-        }
+        rowSelection={{
+          onChange: (_, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
@@ -276,13 +312,11 @@ const TableList: React.FC = () => {
                 {selectedRowsState.length}
               </a>{' '}
               项 &nbsp;&nbsp;
-              <span>
-                {/*服务调用次数总计 {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)} 万*/}
-              </span>
             </div>
           }
         >
           <Button
+            size={'small'}
             onClick={async () => {
               await handleRemove(selectedRowsState);
               setSelectedRows([]);
@@ -291,7 +325,6 @@ const TableList: React.FC = () => {
           >
             批量删除
           </Button>
-          <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
       <ModalForm
@@ -354,7 +387,7 @@ const TableList: React.FC = () => {
             },
           ]}
           label="是否公开"
-          name="is_public"
+          name="visibility"
         />
         <ProFormTextArea label="文件描述" width="md" name="description" />
       </ModalForm>
