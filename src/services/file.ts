@@ -3,6 +3,7 @@ import { getPageInfo } from '@/services/utils';
 import type { SortOrder } from 'antd/es/table/interface';
 import type { FileItem } from '@/models/file';
 import { request } from 'umi';
+import { JwtToken } from '@/models/const-value';
 
 export async function queryFilesForTable(
   params: Partial<FileItem & API.PageParams>,
@@ -47,5 +48,26 @@ export async function removeFile(data: { ids: string[] }, options?: Record<strin
     data,
     method: 'DELETE',
     ...(options || {}),
+  });
+}
+
+/** 删除规则 DELETE /api/rule */
+export async function downloadFile(url: string) {
+  const token = localStorage.getItem(JwtToken) || '';
+  return request(`${url}`, {
+    headers: {
+      token: token,
+    },
+    method: 'GET', // GET / POST 均可以
+    responseType: 'blob', // 必须注明返回二进制流
+  });
+}
+
+export async function queryFileByIds(idStr: string) {
+  const data = { ids: idStr.split(',') };
+  console.log('>>>>>> add file', data);
+  return request<FileItem>('/api/v1/file/listByIds', {
+    data,
+    method: 'POST',
   });
 }

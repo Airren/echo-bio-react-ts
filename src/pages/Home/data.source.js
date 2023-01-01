@@ -100,7 +100,8 @@ export const Banner01DataSource = {
   textWrapper: { className: 'banner0-text-wrapper' },
   title: {
     className: 'banner0-title',
-    children: 'http://www.neo-bio.cn//static/upload/image/20210430/1619760918134343.png',
+    children: '易丂生物',
+    // children: 'http://www.neo-bio.cn/static/upload/image/20210430/1619760918134343.png',
   },
   content: {
     className: 'banner0-content',
@@ -529,7 +530,7 @@ export const Footer10DataSource = {
     className: 'copyright',
     children: (
       <span>
-        ©2022 by <a href="https://motion.ant.design">逆耳生物</a> All Rights Reserved
+        ©2020-2023 <a href="http://echo-bio.cn">易丂生物</a> All Rights Reserved
       </span>
     ),
   },

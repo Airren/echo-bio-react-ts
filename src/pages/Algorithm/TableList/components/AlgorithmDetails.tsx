@@ -45,7 +45,16 @@ const AlgorithmDetail: React.FC<AlgorithmDetailsProps> = ({
         return (
           <div>
             <br />
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{record.document}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                img(props) {
+                  return <img {...props} style={{ maxWidth: '100%' }} />;
+                },
+              }}
+            >
+              {record.document}
+            </ReactMarkdown>
           </div>
         );
       },
@@ -54,7 +63,7 @@ const AlgorithmDetail: React.FC<AlgorithmDetailsProps> = ({
 
   return (
     <Drawer
-      width={1000}
+      // width={600}
       visible={showDetail}
       onClose={() => {
         setCurrentRow(undefined);
@@ -64,6 +73,7 @@ const AlgorithmDetail: React.FC<AlgorithmDetailsProps> = ({
     >
       {algorithm?.name && (
         <ProDescriptions<AlgorithmItem>
+          bordered
           column={1}
           title={algorithm?.label}
           request={async () => ({

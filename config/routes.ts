@@ -50,6 +50,21 @@
     path: '/job/create',
     component: './Job/CreateForm',
   },
+
+  {
+    name: '分析任务',
+    icon: 'table',
+    path: '/job/list',
+    component: './Job',
+  },
+
+  {
+    name: '文件管理',
+    icon: 'table',
+    path: '/file/list',
+    component: './File',
+  },
+
   {
     name: '算法管理',
     icon: 'table',
@@ -79,13 +94,6 @@
       },
     ],
   },
-  {
-    name: '文件管理',
-    icon: 'table',
-    path: '/file/list',
-    component: './File',
-  },
-
   {
     path: '/',
     layout: false,

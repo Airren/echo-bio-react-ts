@@ -1,35 +1,51 @@
-import { Card, Col, message, Row } from 'antd';
+import { Card, Col, Row } from 'antd';
 import ProForm, { ProFormText, ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
-import { useLocation, useRequest } from 'umi';
+import { useLocation } from 'umi';
 import type { FC } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { fakeSubmitForm } from './service';
 import { GridContent } from '@ant-design/pro-components';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { AlgorithmItem } from '@/models/algorithm';
 import { history } from '@@/core/history';
-import { FileUploadPath } from '@/models/const-value';
+import { FileUploadPath, JwtToken } from '@/models/const-value';
 import styles from './style.less';
 import cardStyles from '../../Algorithm/CardList/style.less';
 import Paragraph from 'antd/lib/typography/Paragraph';
+import { createJob } from '@/services/job';
+import type { JobItem } from '@/models/job';
 
-const BasicForm: FC<Record<string, any>> = () => {
-  const { run } = useRequest(fakeSubmitForm, {
-    manual: true,
-    onSuccess: () => {
-      message.success('提交成功');
-    },
-  });
-
+const JobCreateForm: FC<JobItem> = () => {
   const onFinish = async (values: Record<string, any>) => {
-    console.log('>>>>>>>>> this is the value', values);
-    await run(values);
+    const job: JobItem = { id: '', parameters: new Map<string, string>() };
+    for (const key in values) {
+      switch (key) {
+        case 'algorithm':
+          job.algorithm = values[key];
+          break;
+        case 'name':
+          job.name = values[key];
+          break;
+        case 'description':
+          job.description = values[key];
+          break;
+        default:
+          if (typeof values[key] === 'string') {
+            job.parameters[key] = values[key];
+          } else {
+            values[key].forEach((val: any) => {
+              job.parameters[key] = val.response.data.id;
+            });
+          }
+      }
+    }
+
+    await createJob(job);
   };
 
   const location = useLocation();
   const algorithm: AlgorithmItem = location.state;
-  if (!algorithm) {
+  if (!algorithm || algorithm.parameters == undefined) {
     history.push({
       pathname: '/algo/list',
     });
@@ -66,7 +82,16 @@ const BasicForm: FC<Record<string, any>> = () => {
                 fieldProps={{
                   name: 'file',
                   multiple: false,
+                  // accept: '.jpeg,.jpg,.png',
+                  data: { fileType: 'IMAGE' },
+                  headers: { token: localStorage.getItem(JwtToken) || '' },
+                  className: 'upload-list-inline',
                 }}
+                rules={[
+                  {
+                    required: typeof x.required == 'boolean' && x.required,
+                  },
+                ]}
                 action={FileUploadPath}
               />
             );
@@ -80,7 +105,18 @@ const BasicForm: FC<Record<string, any>> = () => {
       })}
     </>
   );
-  const content = <ReactMarkdown remarkPlugins={[remarkGfm]}>{algorithm.document}</ReactMarkdown>;
+  const content = (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        img(props) {
+          return <img {...props} style={{ maxWidth: '100%' }} />;
+        },
+      }}
+    >
+      {algorithm.document}
+    </ReactMarkdown>
+  );
 
   const header = (
     <Card className={cardStyles.card} bordered={false}>
@@ -132,7 +168,7 @@ const BasicForm: FC<Record<string, any>> = () => {
                     </span>
                   }
                   tooltip="备注信息"
-                  name="standard"
+                  name="description"
                   width="xl"
                   placeholder="请输入备注"
                 />
@@ -148,4 +184,4 @@ const BasicForm: FC<Record<string, any>> = () => {
   );
 };
 
-export default BasicForm;
+export default JobCreateForm;

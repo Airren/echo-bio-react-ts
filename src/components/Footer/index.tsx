@@ -3,17 +3,17 @@ import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
 
 const Footer: React.FC = () => {
-  const defaultMessage = '上海亿氪信息技术有限公司出品';
+  const defaultMessage = '易丂生物 All Right Reserved';
 
   const currentYear = new Date().getFullYear();
 
   return (
     <DefaultFooter
-      copyright={`${currentYear} ${defaultMessage}`}
+      copyright={`2020-${currentYear} ${defaultMessage}`}
       links={[
         {
           // key: 'Ant Design Pro',
-          title: 'Nie-Bio',
+          title: 'Echo Bio',
           href: '#',
           blankTarget: true,
         },
@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
         },
         {
           // key: 'Ant Design',
-          title: '逆耳生物',
+          title: '易丂生物',
           href: '#',
           blankTarget: true,
         },

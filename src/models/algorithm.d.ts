@@ -16,13 +16,13 @@ export interface AlgorithmItem extends Item {
   name: string;
   label: string;
   group: string;
-  image?: UploadFile[] | string;
+  image: UploadFile[] | string;
   description: string;
-  price: number;
+  point: number;
   favorite?: number;
-  parameters?: ParameterItem[];
+  parameters: ParameterItem[];
   command?: string;
-  document?: string;
+  document: string;
 }
 
 export interface GroupItem extends Item {

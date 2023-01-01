@@ -48,7 +48,7 @@
   ],
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@ant-design/pro-components": "1.1.1",
+    "@ant-design/pro-components": "^2.3.49",
     "@ant-design/pro-form": "^2.2.1",
     "@ant-design/pro-table": "^3.0.10",
     "@umijs/route-utils": "^2.0.0",
@@ -56,6 +56,7 @@
     "classnames": "^2.3.0",
     "copy-to-clipboard": "^3.3.2",
     "enquire-js": "^0.2.1",
+    "file-saver": "^2.0.5",
     "lodash": "^4.17.0",
     "moment": "^2.29.0",
     "numeral": "^2.0.6",

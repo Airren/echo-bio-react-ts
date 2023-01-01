@@ -23,7 +23,7 @@ const initialParameterItems: ParameterItem[] = [
   {
     id: `0${Date.now()}`,
     label: '任务名',
-    name: 'task',
+    name: 'name',
     required: true,
     type: 'string',
   },
@@ -168,33 +168,67 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
         <Card title="基本信息" className={styles.card} bordered={false}>
           <Row gutter={16}>
             <Col lg={6} md={12} sm={24}>
-              <ProFormText
-                name="name"
-                label="英文名称"
-                tooltip="英文名称必须唯且不包含空格"
-                placeholder="请输入英文名称"
-                width="md"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入英文名称！',
-                  },
-                ]}
-              />
+              <Row>
+                <ProFormText
+                  name="name"
+                  label="英文名称"
+                  tooltip="英文名称必须唯且不包含空格"
+                  placeholder="请输入英文名称"
+                  width="md"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入英文名称！',
+                    },
+                  ]}
+                />
+              </Row>
+              <Row>
+                <ProFormSelect
+                  name="group"
+                  label="算法分类"
+                  width="md"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输选择分类！',
+                    },
+                  ]}
+                  // onMetaChange={onChange}
+
+                  options={optionsVal}
+                />
+              </Row>
             </Col>
             <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
-              <ProFormText
-                name="label"
-                width="md"
-                label="中文名称"
-                placeholder="请输入中文名称"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入中文名称！',
-                  },
-                ]}
-              />
+              <Row>
+                <ProFormText
+                  name="label"
+                  width="md"
+                  label="中文名称"
+                  placeholder="请输入中文名称"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入中文名称！',
+                    },
+                  ]}
+                />
+              </Row>
+              <Row>
+                <ProFormMoney
+                  name="point"
+                  width="md"
+                  label="分析定价"
+                  placeholder="请输入分析定价"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入分析定价！',
+                    },
+                  ]}
+                />
+              </Row>
             </Col>
             <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
               <ProFormUploadButton
@@ -217,38 +251,6 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
                   },
                 ]}
                 extra="最大像素支持256*256"
-              />
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col lg={6} md={12} sm={24}>
-              <ProFormSelect
-                name="group"
-                label="算法分类"
-                width="md"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输选择分类！',
-                  },
-                ]}
-                // onMetaChange={onChange}
-
-                options={optionsVal}
-              />
-            </Col>
-            <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
-              <ProFormMoney
-                name="price"
-                width="md"
-                label="分析定价"
-                placeholder="请输入分析定价"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入分析定价！',
-                  },
-                ]}
               />
             </Col>
           </Row>
@@ -275,7 +277,7 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
 
           {/*</Row>*/}
         </Card>
-        <Card title="参数管理" bordered={false}>
+        <Card title="参数管理" className={styles.card} bordered={false}>
           <ProForm.Item name="parameters">
             <EditableProTable<ParameterItem>
               recordCreatorProps={{
@@ -290,7 +292,19 @@ const AlgorithmCreateForm: FC<AlgorithmItem> = () => {
             />
           </ProForm.Item>
         </Card>
-        <Card title="命令模板" className={styles.card} bordered={false}>
+
+        <Card title="容器模板" className={styles.card} bordered={false}>
+          <ProFormText
+            name="docker_image"
+            label="容器镜像"
+            placeholder="请输入容器镜像"
+            rules={[
+              {
+                required: true,
+                message: '请输入容器镜像！',
+              },
+            ]}
+          />
           <ProFormTextArea
             name="command"
             label="命令模板"

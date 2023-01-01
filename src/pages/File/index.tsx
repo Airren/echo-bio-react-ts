@@ -19,7 +19,7 @@ import {
 import { FileUploadPath, JwtToken } from '@/models/const-value';
 import copy from 'copy-to-clipboard';
 import type { FileItem } from '@/models/file';
-import { fileInfo, queryFilesForTable, removeFile } from '@/services/file';
+import { downloadFile, fileInfo, queryFilesForTable, removeFile } from '@/services/file';
 import UpdateForm from '@/pages/File/components/UpdateForm';
 import type { TableListPagination } from '@/models/data';
 
@@ -107,6 +107,36 @@ const handleRemove = async (selectedRows: FileItem[]): Promise<any> => {
   });
 };
 
+const handleDownload = async (url: string, name: string) => {
+  try {
+    const res = await downloadFile(url);
+    const FileSaver = require('file-saver');
+    FileSaver.saveAs(res, name);
+    console.log(res, name);
+    message.success('下载成功');
+    return true;
+  } catch (error) {
+    message.error('下载失败请重试！');
+    return false;
+  } finally {
+  }
+};
+
+export function DownloadFileButton(val: React.ReactNode, entity: FileItem) {
+  return (
+    <span style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}>
+      <a
+        onClick={async () => {
+          await handleDownload(entity.URLPath, val + '.' + entity.file_type);
+        }}
+        href={'#'}
+      >
+        {val + '.' + entity.file_type || '--'}
+      </a>
+    </span>
+  );
+}
+
 const TableList: React.FC = () => {
   /** 新建窗口的弹窗 */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
@@ -122,11 +152,7 @@ const TableList: React.FC = () => {
       title: '文件名称',
       dataIndex: 'name',
       render: (val, entity) => {
-        return (
-          <span style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}>
-            <a href={entity.URLPath}>{val + '.' + entity.file_type || '--'}</a>
-          </span>
-        );
+        return DownloadFileButton(val, entity);
       },
     },
     {
@@ -276,7 +302,7 @@ const TableList: React.FC = () => {
           labelWidth: 0,
         }}
         pagination={{
-          pageSize: 10,
+          pageSize: 5,
           showSizeChanger: true,
         }}
         toolBarRender={() => [
