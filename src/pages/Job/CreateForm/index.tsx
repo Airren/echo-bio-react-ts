@@ -1,4 +1,4 @@
-import { Card, Col, Row } from 'antd';
+import { Card, Col, message, Row } from 'antd';
 import ProForm, { ProFormText, ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
 import { useLocation } from 'umi';
 import type { FC } from 'react';
@@ -17,7 +17,7 @@ import type { JobItem } from '@/models/job';
 
 const JobCreateForm: FC<JobItem> = () => {
   const onFinish = async (values: Record<string, any>) => {
-    const job: JobItem = { id: '', parameters: new Map<string, string>() };
+    const job: JobItem = { name: '', id: '', parameters: new Map<string, string>() };
     for (const key in values) {
       switch (key) {
         case 'algorithm':
@@ -40,7 +40,17 @@ const JobCreateForm: FC<JobItem> = () => {
       }
     }
 
-    await createJob(job);
+    try {
+      await createJob(job);
+      message.success('提交成功');
+      history.push({
+        pathname: '/job/list',
+        // state: { ...item },
+      });
+    } catch {
+      message.error('提交失败');
+      // console.log
+    }
   };
 
   const location = useLocation();

@@ -3,9 +3,10 @@ import { queryJobsForTable } from '@/services/job';
 import type { JobItem } from '@/models/job';
 import { ProList } from '@ant-design/pro-components';
 import type { ProListMetas } from '@ant-design/pro-list';
-import { Progress, Tag } from 'antd';
+import { Button, Progress, Tag } from 'antd';
 import React, { useState } from 'react';
 import JobDetail from '@/pages/Job/DetailDraw';
+import { handleDownload } from '@/pages/File';
 
 export function RenderStatus(val: any) {
   let state: '等待中' | '分析中' | '已完成' | '已取消' | '失败' = '等待中';
@@ -88,7 +89,27 @@ const JobTableList: React.FC = () => {
       },
     },
     subTitle: {
-      render: (val) => <Tag color="#5BD8A6">{val}</Tag>,
+      render: (val, entity) => (
+        <Tag color="#5BD8A6">
+          {
+            <Button
+              size={'small'}
+              type={'text'}
+              // color={"#FFFFFF"}
+              disabled={entity.result == '/api/v1/file/download/0'}
+              onClick={async () => {
+                setCurrentRow(entity);
+                console.log(entity);
+                if (entity.result != undefined) {
+                  await handleDownload(entity.result, entity.name + '-result.tar.gz');
+                }
+              }}
+            >
+              结果下载
+            </Button>
+          }
+        </Tag>
+      ),
       search: false,
       dataIndex: 'algorithm',
       title: '算法类型',
@@ -126,11 +147,12 @@ const JobTableList: React.FC = () => {
 
     actions: {
       search: false,
-      render: (_m, entity) => {
+      render: (val, entity) => {
         return [
           <a key="invite">取消</a>,
           <a key="operate">修改</a>,
           <a
+            key="detail"
             onClick={() => {
               setCurrentRow(entity);
               setShowDetail(true);

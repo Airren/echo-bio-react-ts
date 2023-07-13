@@ -107,12 +107,12 @@ const handleRemove = async (selectedRows: FileItem[]): Promise<any> => {
   });
 };
 
-const handleDownload = async (url: string, name: string) => {
+export const handleDownload = async (url: string, name: string) => {
   try {
     const res = await downloadFile(url);
     const FileSaver = require('file-saver');
     FileSaver.saveAs(res, name);
-    console.log(res, name);
+    console.log('>>>>>>>>>>>>>', res, name);
     message.success('下载成功');
     return true;
   } catch (error) {
