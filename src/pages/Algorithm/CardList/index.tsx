@@ -15,9 +15,12 @@ const { Option } = TagSelect;
 const AlgorithmCardList = () => {
   const { data, loading, run } = useRequest((values: any) => {
     console.log('form data', values);
-    return queryAlgorithmList({
-      count: 8,
-    });
+    let groupsIds;
+    if (values != undefined) {
+      groupsIds = values.category;
+    } else {
+    }
+    return queryAlgorithmList({ groupIds: groupsIds });
   });
 
   const { data: listData } = useRequest(() => {
@@ -29,8 +32,6 @@ const AlgorithmCardList = () => {
   const optionsVal = groups.map((val) => {
     return <Option value={val.id}>{val.label}</Option>;
   });
-
-  console.log('>>>>>>>>>>>', data);
 
   const list = data || [];
 
@@ -50,7 +51,7 @@ const AlgorithmCardList = () => {
             run(values);
           }}
         >
-          <StandardFormRow title="所属类目">
+          <StandardFormRow title="算分分类">
             <Form.Item name="category">
               <TagSelect expandable>{optionsVal}</TagSelect>
             </Form.Item>
@@ -79,7 +80,7 @@ const AlgorithmCardList = () => {
                   hoverable
                   className={styles.card}
                   actions={[
-                    <a key="option1">￥({item.price}/100)</a>,
+                    <a key="option1">￥({item.point}/100)</a>,
                     <a key="option2">{item.favorite}</a>,
                   ]}
                   onClick={() =>

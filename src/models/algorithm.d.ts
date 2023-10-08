@@ -15,7 +15,7 @@ export interface AlgorithmItem extends Item {
   id: string;
   name: string;
   label: string;
-  group: string;
+  groupIds: string[];
   image: UploadFile[] | string;
   description: string;
   point: number;

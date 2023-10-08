@@ -4,13 +4,12 @@ import type { PageInfo } from '@/models/data';
 import { getPageInfo } from '@/services/utils';
 import type { SortOrder } from 'antd/es/table/interface';
 
-export async function queryAlgorithmList(params: {
-  count: number;
-}): Promise<{ data: AlgorithmItem[] }> {
-  console.log('query algo list');
+export async function queryAlgorithmList(
+  params: Partial<AlgorithmItem & API.PageParams>,
+): Promise<{ data: AlgorithmItem[] }> {
   return request('/api/v1/algorithm/list', {
     method: 'POST',
-    params,
+    data: { ...params },
   });
 }
 
